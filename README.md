@@ -3,8 +3,8 @@
 A pure-Python collection of industrial-grade widgets and instruments for **PySide6** and **PyQt6**, inspired by and ported from classical Qt industrial controls (`QtIndustrialWidgets`).
 
 > [!WARNING]
-> ### ⚠️ Project Status: Experimental / Not Fully Maintained
-> This repository is currently **in an early experimental / proof-of-concept stage** and is used for testing and prototyping. It is **not yet fully maintained**, tested for production environments, or guaranteed to have a stable API. Breaking changes may occur at any time.
+> ### ⚠️ Project Status: Experimental / Work in Progress
+> This project is currently in an **experimental stage** and should **not yet be considered stable**. It is intended for prototyping and testing; APIs and features are subject to change without notice and it is not yet ready for production environments.
 
 ---
 
