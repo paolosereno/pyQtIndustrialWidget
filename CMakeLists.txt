@@ -86,7 +86,6 @@ get_target_property(QT6_WIDGETS_INCLUDES Qt6::Widgets INTERFACE_INCLUDE_DIRECTOR
 get_target_property(QT6_GUI_INCLUDES Qt6::Gui INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(QT6_CORE_INCLUDES Qt6::Core INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(PYSIDE6_INCLUDES PySide6::pyside6 INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(QT_IND_INCLUDES QtIndustrialWidgets::QtIndustrialWidgets INTERFACE_INCLUDE_DIRECTORIES)
 
 # Compiler builtin include directory for Linux (resolves stddef.h/cstddef in shiboken parsing)
 execute_process(
@@ -99,30 +98,46 @@ set(SHIBOKEN_INCLUDE_ARGS
     "-I${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/compat")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/compat" AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/compat")
     list(APPEND SHIBOKEN_INCLUDE_ARGS "-I${CMAKE_CURRENT_SOURCE_DIR}/compat")
 endif()
 
-if(EXISTS "${COMPILER_BUILTIN_INCLUDE}")
+if(COMPILER_BUILTIN_INCLUDE AND IS_DIRECTORY "${COMPILER_BUILTIN_INCLUDE}")
     list(APPEND SHIBOKEN_INCLUDE_ARGS "-I${COMPILER_BUILTIN_INCLUDE}")
 endif()
 
-if(PYSIDE6_DIR)
-    list(APPEND SHIBOKEN_INCLUDE_ARGS
-        "-I${PYSIDE6_DIR}/include"
-        "-I${PYSIDE6_DIR}/include/PySide6"
-        "-I${PYSIDE6_DIR}/include/PySide6/QtCore"
-        "-I${PYSIDE6_DIR}/include/PySide6/QtGui"
-        "-I${PYSIDE6_DIR}/include/PySide6/QtWidgets"
-    )
+# Add upstream QtIndustrialWidgets source include directory
+if(DEFINED qtindustrialwidgets_SOURCE_DIR AND IS_DIRECTORY "${qtindustrialwidgets_SOURCE_DIR}/include")
+    list(APPEND SHIBOKEN_INCLUDE_ARGS "-I${qtindustrialwidgets_SOURCE_DIR}/include")
 endif()
 
-foreach(inc ${QT_IND_INCLUDES} ${QT6_WIDGETS_INCLUDES} ${QT6_GUI_INCLUDES} ${QT6_CORE_INCLUDES} ${PYSIDE6_INCLUDES})
-    if(inc)
+# Add PySide6 include directories
+if(PYSIDE6_DIR)
+    foreach(_sub "" "/PySide6" "/PySide6/QtCore" "/PySide6/QtGui" "/PySide6/QtWidgets")
+        if(IS_DIRECTORY "${PYSIDE6_DIR}/include${_sub}")
+            list(APPEND SHIBOKEN_INCLUDE_ARGS "-I${PYSIDE6_DIR}/include${_sub}")
+        endif()
+    endforeach()
+endif()
+
+# Gather interface include paths safely (filtering out raw generator expressions like $<INSTALL_INTERFACE:...>)
+set(_CANDIDATE_INCLUDES
+    ${QT6_WIDGETS_INCLUDES}
+    ${QT6_GUI_INCLUDES}
+    ${QT6_CORE_INCLUDES}
+    ${PYSIDE6_INCLUDES}
+)
+
+foreach(inc IN LISTS _CANDIDATE_INCLUDES)
+    if(inc AND NOT inc MATCHES "^\\$<" AND IS_DIRECTORY "${inc}")
         list(APPEND SHIBOKEN_INCLUDE_ARGS "-I${inc}")
     endif()
 endforeach()
+
+# Clean up empty items and duplicates
+list(REMOVE_ITEM SHIBOKEN_INCLUDE_ARGS "" "-I" "-I\"\"")
 list(REMOVE_DUPLICATES SHIBOKEN_INCLUDE_ARGS)
+message(STATUS "Shiboken include flags: ${SHIBOKEN_INCLUDE_ARGS}")
 
 # Generated binding C++ sources list
 set(GENERATED_SOURCES
