@@ -33,43 +33,81 @@ The library exposes high-performance instrumentation widgets designed for test b
 
 ---
 
-## 🛠 Prerequisites & Requirements
+## 🛠 Prerequisites & System Dependencies
 
-- **Python**: `>= 3.9`
-- **PySide6**: `>= 6.6.0`
-- **shiboken6** & **shiboken6-generator**: `>= 6.6.0`
-- **CMake**: `>= 3.20`
-- **C++17 compliant compiler** (GCC 11+, Clang 13+, MSVC 2019+)
-- **Ninja** (recommended build generator)
+Before installing, ensure that your system has Python (>= 3.9), CMake (>= 3.20), and a C++17 compiler installed. Because the bindings compile C++ source code against Qt 6, several OS-level development libraries are required.
+
+### 🐧 Ubuntu / Debian
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake ninja-build python3-venv \
+                    qt6-base-dev libgl1-mesa-dev libxkbcommon-dev
+```
+
+### 🎩 Fedora / RHEL
+```bash
+sudo dnf install -y gcc-c++ cmake ninja-build python3-devel \
+                    qt6-qtbase-devel mesa-libGL-devel libxkbcommon-devel
+```
+
+### 🍎 macOS
+Make sure Xcode Command Line Tools and Qt 6 (via Homebrew) are installed:
+```bash
+xcode-select --install
+brew install cmake ninja qt@6
+```
+
+### 🪟 Windows
+1. Install **Visual Studio 2019 or 2022** (Community Edition is sufficient).
+2. During installation, select the workload: **"Desktop development with C++"** (which provides the MSVC C++17 compiler and tools).
+3. If activating virtual environments in **PowerShell**, enable local script execution if not already allowed:
+   ```powershell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   ```
 
 ---
 
-## 🚀 Installation & Local Development
+## 🚀 Installation & Development Setup
 
 ### Editable Development Install
 
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/paolosereno/pyQtIndustrialWidget.git
    cd pyQtIndustrialWidget
    ```
 
-2. Create and activate a clean virtual environment:
+2. **Create and activate a clean virtual environment**:
+   Using a virtual environment is strongly recommended (and required on modern Linux distributions complying with PEP 668):
    ```bash
+   # Create the virtual environment
    python3 -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+   # Activate on Linux / macOS:
+   source .venv/bin/activate
+
+   # Activate on Windows (Command Prompt):
+   .venv\Scripts\activate.bat
+
+   # Activate on Windows (PowerShell):
+   .venv\Scripts\Activate.ps1
    ```
 
-3. Upgrade pip and install build prerequisites:
+3. **Upgrade pip and install build prerequisites**:
    ```bash
    pip install --upgrade pip
    pip install "scikit-build-core>=0.9.0" "ninja" "PySide6>=6.6.0" "shiboken6>=6.6.0" "shiboken6-generator>=6.6.0"
    ```
 
-4. Build and install the bindings in editable mode:
+4. **Build and install the bindings in editable mode**:
    ```bash
    pip install --no-build-isolation -e .
    ```
+
+> [!TIP]
+> **Why `--no-build-isolation`?**
+> By default, `pip` builds packages in a temporary, isolated environment and attempts to re-download all build dependencies every time (over 200 MB of PySide6/Shiboken6 packages).
+> Using `--no-build-isolation` instructs `pip` to use the dependencies already installed in your active virtual environment, making builds substantially faster and ensuring Shiboken6 discovers the exact PySide6 typesystem definitions.
 
 > [!NOTE]
 > The original C++ upstream source code (`QtIndustrialWidgets`) is automatically fetched by CMake via `FetchContent` during the build process; no manual cloning or local copy of the C++ source is needed.
