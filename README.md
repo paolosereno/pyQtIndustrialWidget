@@ -2,6 +2,10 @@
 
 Python bindings (**PySide6 / Qt 6**) for the C++ [QtIndustrialWidgets](https://github.com/paolosereno/QtIndustrialWidgets) library, built using **Shiboken6**, **CMake**, and **scikit-build-core**.
 
+<p align="center">
+  <img src="Demo.jpg" alt="pyQtIndustrialWidget Showcase Demo Screenshot" width="700"/>
+</p>
+
 > [!WARNING]
 > ### ⚠️ EXPERIMENTAL & WORK IN PROGRESS
 > **This project is currently in an early, experimental stage.**
@@ -131,11 +135,7 @@ An interactive multi-widget showcase script (`demo.py`) is included directly in 
 python demo.py
 ```
 
-This interactive application showcases a `RadialGauge`, `LinearGauge`, `SevenSegmentDisplay`, `IndustrialKnob`, and `LedIndicator` with real-time signal-to-slot synchronization and high-threshold alarm logic:
-
-<p align="center">
-  <img src="Demo.jpg" alt="pyQtIndustrialWidget Showcase Demo Screenshot" width="650"/>
-</p>
+This interactive application showcases a `RadialGauge`, `LinearGauge`, `SevenSegmentDisplay`, `IndustrialKnob`, and `LedIndicator` with real-time signal-to-slot synchronization and high-threshold alarm logic (as shown in the showcase screenshot above).
 
 ### Minimal Example:
 
