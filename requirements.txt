@@ -1,2 +1,0 @@
-# Primary Qt binding (PyQt6 can also be used alternatively)
-PySide6>=6.5.0

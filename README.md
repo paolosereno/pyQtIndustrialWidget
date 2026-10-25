@@ -1,92 +1,137 @@
-# PyQtIndustrialWidget
+# pyQtIndustrialWidget
 
-A pure-Python collection of industrial-grade widgets and instruments for **PySide6** and **PyQt6**, inspired by and ported from classical Qt industrial controls (`QtIndustrialWidgets`).
+Python bindings (**PySide6 / Qt 6**) for the C++ [QtIndustrialWidgets](https://github.com/paolosereno/QtIndustrialWidgets) library, built using **Shiboken6**, **CMake**, and **scikit-build-core**.
 
 > [!WARNING]
-> ### ⚠️ Project Status: Experimental / Work in Progress
-> This project is currently in an **experimental stage** and should **not yet be considered stable**. It is intended for prototyping and testing; APIs and features are subject to change without notice and it is not yet ready for production environments.
+> ### ⚠️ EXPERIMENTAL & WORK IN PROGRESS
+> **This project is currently in an early, experimental stage.**
+> - Features, bindings coverage, and build pipelines are undergoing active development.
+> - Unexpected behaviors, bugs, or ABI/API breaking changes may occur.
+> - **Use exclusively for evaluation, experimentation, and testing purposes.** It is **not** recommended for production use.
+> - Bug reports, feedback, and contributions are welcome via [GitHub Issues](https://github.com/paolosereno/pyQtIndustrialWidget/issues).
 
 ---
 
-## 🛠 Features
+## 📦 Included Widgets (12)
 
-### `SevenSegmentDisplay`
-A vector-rendered 7-segment digital display designed with industrial instrument aesthetics:
-- **Realistic Geometry**: Hexagonal-ended segments modeled after genuine LED/LCD display dies.
-- **Ghost (Unlit) Segments**: Configurable faint background illumination for unlit segments to mimic physical displays.
-- **Custom Color Palettes**: Preset industrial themes including Amber, Classic Red, Green Phosphor, and Cyan, or arbitrary `QColor` values.
-- **Hardware-style Tilt**: Realistic italic shear angle (slanted digits).
-- **Format Flexibility**: Automatic parsing of decimal points, right-aligned digit padding, and configurable digit counts.
-- **Dual Compatibility**: Works seamlessly with both **PySide6** and **PyQt6**.
-- **Pure Vector Graphics**: Drawn dynamically using `QPainter`, scaling cleanly to high-DPI and Retina displays without raster artifacts.
-- **Built-in Interactive Demo**: Standalone runner with live controls to test colors, values, and ghost segment toggles.
+The library exposes high-performance instrumentation widgets designed for test benches, SCADA systems, telemetry displays, and automation dashboards:
 
----
-
-## 🚀 Quick Start
-
-### 1. Prerequisites
-- Python 3.9+
-- PySide6 (recommended) or PyQt6
-
-### 2. Setup Virtual Environment
-```bash
-# Clone the repository
-git clone https://github.com/paolosereno/pyQtIndustrialWidget.git
-cd pyQtIndustrialWidget
-
-# Create and activate a virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 3. Run the Demo
-Launch the interactive test application:
-```bash
-python seven_segment_display.py
-```
+| Widget | Description |
+|---|---|
+| `RadialGauge` | Circular dial instrument with colored threshold warning arcs, needle pointer, and digital readout |
+| `LinearGauge` | Horizontal or vertical linear bar gauge with configurable graduation ticks and scales |
+| `IndustrialKnob` | Precision rotary control knob for setpoint adjustment |
+| `SevenSegmentDisplay` | Multi-digit electronic seven-segment LED readout |
+| `LedIndicator` | Multi-state LED indicator with configurable colors, flashing support, and shapes |
+| `StripChart` | High-frequency real-time scrolling oscilloscope chart powered by M4 decimation |
+| `IndustrialSwitch` | Industrial toggle and multi-position rotary selector switch |
+| `LevelMeter` | Tank liquid level / peak audio VU-meter indicator |
+| `AnnunciatorPanel` | Multi-cell alarm annunciator panel with ISA-compliant sequence states |
+| `Compass` | Circular compass rose for heading, bearing, and navigational orientation |
+| `CircularBargraph` | Segmented circular arc bar display with value threshold states |
+| `AnalysisChart` | Diagnostic and spectrum analysis chart with dual measurement cursors |
 
 ---
 
-## 💻 Example Usage
+## 🛠 Prerequisites & Requirements
+
+- **Python**: `>= 3.9`
+- **PySide6**: `>= 6.6.0`
+- **shiboken6** & **shiboken6-generator**: `>= 6.6.0`
+- **CMake**: `>= 3.20`
+- **C++17 compliant compiler** (GCC 11+, Clang 13+, MSVC 2019+)
+- **Ninja** (recommended build generator)
+
+---
+
+## 🚀 Installation & Local Development
+
+### Editable Development Install
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/paolosereno/pyQtIndustrialWidget.git
+   cd pyQtIndustrialWidget
+   ```
+
+2. Create and activate a clean virtual environment:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+3. Upgrade pip and install build prerequisites:
+   ```bash
+   pip install --upgrade pip
+   pip install "scikit-build-core>=0.9.0" "ninja" "PySide6>=6.6.0" "shiboken6>=6.6.0" "shiboken6-generator>=6.6.0"
+   ```
+
+4. Build and install the bindings in editable mode:
+   ```bash
+   pip install --no-build-isolation -e .
+   ```
+
+> [!NOTE]
+> The original C++ upstream source code (`QtIndustrialWidgets`) is automatically fetched by CMake via `FetchContent` during the build process; no manual cloning or local copy of the C++ source is needed.
+
+---
+
+## 💻 Quick Start Example
+
+Here is an example demonstrating `RadialGauge` connected to an `IndustrialKnob`:
 
 ```python
 import sys
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
-from PySide6.QtGui import QColor
-from seven_segment_display import SevenSegmentDisplay
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
+from pyQtIndustrialWidget import RadialGauge, IndustrialKnob
 
-app = QApplication(sys.argv)
+class DemoWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("pyQtIndustrialWidget Demo")
+        self.resize(400, 500)
 
-window = QWidget()
-layout = QVBoxLayout(window)
+        container = QWidget(self)
+        self.setCentralWidget(container)
+        layout = QVBoxLayout(container)
 
-# Create and customize display
-display = SevenSegmentDisplay()
-display.setNumDigits(6)
-display.setOnColor(QColor(255, 140, 0))  # Industrial Amber
-display.setShowGhostSegments(True)
-display.setText("123.45")
+        # Instantiate a RadialGauge
+        self.gauge = RadialGauge()
+        self.gauge.setRange(0.0, 100.0)
+        self.gauge.setUnit("BAR")
+        self.gauge.setValue(25.0)
 
-layout.addWidget(display)
-window.show()
+        # Instantiate an IndustrialKnob
+        self.knob = IndustrialKnob()
+        self.knob.setRange(0.0, 100.0)
+        self.knob.setValue(25.0)
 
-sys.exit(app.exec())
+        # Connect the knob signal to the gauge slot
+        self.knob.valueChanged.connect(self.gauge.setValue)
+
+        layout.addWidget(self.gauge)
+        layout.addWidget(self.knob)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = DemoWindow()
+    window.show()
+    sys.exit(app.exec())
 ```
 
 ---
 
-## 🗺 Roadmap / Planned Widgets
-- [ ] Analog Gauges (Circular & Arc Meters)
-- [ ] LED Status Indicators & Bargraphs
-- [ ] Industrial Sliders & Knobs
-- [ ] Multi-character Alphanumeric 14/16-segment Displays
-- [ ] Packaging & distribution as a reusable PyPI package
+## 🧪 Running Tests
+
+To run the test suite in a headless environment:
+
+```bash
+python -m unittest discover -s tests
+```
 
 ---
 
 ## 📄 License
-This project is open-source. A formal license will be added as the project matures.
+
+This project is licensed under the [MIT License](LICENSE).
+Upstream C++ library copyright (c) Paolo Sereno / QtIndustrialWidgets Contributors.
