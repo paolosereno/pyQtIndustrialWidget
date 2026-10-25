@@ -114,9 +114,17 @@ brew install cmake ninja qt@6
 
 ---
 
-## 💻 Quick Start Example
+## 💻 Quick Start & Interactive Showcase
 
-Here is an example demonstrating `RadialGauge` connected to an `IndustrialKnob`:
+An interactive multi-widget showcase script (`demo.py`) is included directly in the repository root:
+
+```bash
+python demo.py
+```
+
+This interactive application displays a `RadialGauge`, `LinearGauge`, `SevenSegmentDisplay`, `IndustrialKnob`, and `LedIndicator` with real-time signal-to-slot synchronization and high-threshold alarm logic.
+
+### Minimal Example:
 
 ```python
 import sys
