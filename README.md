@@ -131,7 +131,11 @@ An interactive multi-widget showcase script (`demo.py`) is included directly in 
 python demo.py
 ```
 
-This interactive application displays a `RadialGauge`, `LinearGauge`, `SevenSegmentDisplay`, `IndustrialKnob`, and `LedIndicator` with real-time signal-to-slot synchronization and high-threshold alarm logic.
+This interactive application showcases a `RadialGauge`, `LinearGauge`, `SevenSegmentDisplay`, `IndustrialKnob`, and `LedIndicator` with real-time signal-to-slot synchronization and high-threshold alarm logic:
+
+<p align="center">
+  <img src="Demo.jpg" alt="pyQtIndustrialWidget Showcase Demo Screenshot" width="650"/>
+</p>
 
 ### Minimal Example:
 
@@ -176,12 +180,18 @@ if __name__ == "__main__":
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Running the Automated Test Suite
 
-To run the test suite in a headless environment:
+An automated unit test suite is included in [`tests/test_basic.py`](tests/test_basic.py) to verify class imports, widget instantiation, property setters/getters, and signal connections.
+
+Run the test suite with verbose output:
 
 ```bash
-python -m unittest discover -s tests
+# Standard test run
+python -m unittest discover -s tests -v
+
+# Headless / CI server test run (no graphical X11/Wayland display needed)
+QT_QPA_PLATFORM=offscreen python -m unittest discover -s tests -v
 ```
 
 ---
