@@ -41,8 +41,17 @@ Before installing, ensure that your system has Python (>= 3.9), CMake (>= 3.20),
 ```bash
 sudo apt update
 sudo apt install -y build-essential cmake ninja-build python3-venv \
-                    qt6-base-dev libgl1-mesa-dev libxkbcommon-dev
+                    libgl1-mesa-dev libxkbcommon-dev
 ```
+
+> [!NOTE]
+> **Qt 6 Version Matching:**
+> PySide6 requires Qt development headers matching its version (e.g. Qt 6.8 for PySide6 6.8.x). If your distribution packages an older Qt (such as Ubuntu 24.04 with Qt 6.4), you can install the matching Qt 6.8 SDK into `.venv/Qt` with `aqtinstall`:
+> ```bash
+> pip install aqtinstall
+> python -m aqt install-qt linux desktop 6.8.2 gcc_64 --outputdir .venv/Qt
+> ```
+> The build system (`CMakeLists.txt`) automatically detects and prioritizes `.venv/Qt` when present!
 
 ### 🎩 Fedora / RHEL
 ```bash
